@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointments — Wireframe</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:        #4F46E5;
+      --brand-subtle: #EEF2FF;
+      --brand-muted:  #C7D2FE;
+      --success:      #16A34A;
+      --success-bg:   #F0FDF4;
+      --warning:      #D97706;
+      --warning-bg:   #FFFBEB;
+      --info:         #0369A1;
+      --info-bg:      #F0F9FF;
+      --danger:       #DC2626;
+      --danger-bg:    #FEF2F2;
+      --orange:       #EA580C;
+      --orange-bg:    #FFF7ED;
+      --purple:       #7C3AED;
+      --purple-bg:    #F5F3FF;
+      --teal:         #0F766E;
+      --teal-bg:      #F0FDFA;
+
+      --surface:      #FFFFFF;
+      --page:         #F8F9FB;
+      --border:       #E4E7EC;
+      --border-hover: #CBD5E1;
+      --text-primary: #111827;
+      --text-secondary:#374151;
+      --text-muted:   #9CA3AF;
+      --radius:       8px;
+      --radius-pill:  999px;
+      --shadow-card:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+      background: var(--page);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px 64px;
+    }
+
+    /* ── Sticky header ── */
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--page);
+      padding: 24px 0 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid transparent;
+    }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+    .page-desc  { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Week nav buttons */
+    .week-nav { display: flex; align-items: center; gap: 6px; }
+    .btn-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      cursor: pointer; color: var(--text-secondary);
+      font-size: 15px; font-weight: 700;
+    }
+    .btn-week-label {
+      height: 32px; padding: 0 12px;
+      border: 1px solid var(--border);
+      background: var(--brand-subtle);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 12px; font-weight: 600;
+      color: var(--brand);
+      display: flex; align-items: center;
+    }
+
+    /* ── Stack spacing ── */
+    .stack { display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    /* ── Week strip ── */
+    .week-strip {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      padding: 12px;
+    }
+    .day-pill {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 8px 4px;
+      border-radius: 8px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: background 120ms;
+    }
+    .day-pill:hover { background: var(--page); }
+    .day-pill.selected {
+      border-color: var(--brand);
+      background: var(--brand-subtle);
+    }
+    .day-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--text-muted); line-height: 1.4;
+    }
+    .day-pill.selected .day-label { color: var(--brand); }
+    .day-num {
+      font-size: 20px; font-weight: 700; line-height: 1.15; color: var(--text-primary);
+    }
+    .day-pill.selected .day-num { color: var(--brand); }
+    .day-month { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+    .day-pill.selected .day-month { color: var(--brand); }
+    .day-badge {
+      margin-top: 4px;
+      min-width: 20px; height: 20px; border-radius: 999px; padding: 0 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      background: var(--border); color: var(--text-secondary);
+    }
+    .day-pill.selected .day-badge { background: var(--brand); color: #fff; }
+    .day-badge.empty { background: transparent; color: var(--text-muted); }
+
+    /* ── Show rate banner ── */
+    .show-banner {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      padding: 10px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .banner-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .pill-sm {
+      font-size: 11px; font-weight: 700;
+      border-radius: 999px; padding: 1px 7px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; align-items: center; gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .tab {
+      padding: 12px 16px;
+      font-size: 14px; font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      margin-bottom: -1px;
+      white-space: nowrap;
+    }
+    .tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .tab-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 20px; padding: 0 6px;
+      background: var(--brand-subtle); color: var(--brand);
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+      margin-left: 6px;
+    }
+    .tab:not(.active) .tab-count {
+      background: var(--border); color: var(--text-muted);
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .toolbar-left { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+    .toolbar-right { display: flex; align-items: center; gap: 6px; }
+    .toggle-group { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .toggle-btn {
+      padding: 5px 12px; font-size: 12px; font-weight: 600;
+      background: var(--surface); color: var(--text-secondary);
+      border: none; cursor: pointer; border-right: 1px solid var(--border);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .toggle-btn:last-child { border-right: none; }
+    .toggle-btn.active { background: var(--brand); color: #fff; }
+
+    .filter-select {
+      height: 32px; padding: 0 28px 0 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 12px; font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    .search-input {
+      height: 32px; padding: 0 10px 0 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      width: 200px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 10px center;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    /* ── Day heading row ── */
+    .day-heading-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-heading {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-primary);
+    }
+    .appt-count { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Table ── */
+    .appt-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .appt-table thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+    .appt-table th {
+      padding: 7px 12px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      text-align: left; white-space: nowrap;
+    }
+    .appt-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 100ms;
+    }
+    .appt-table tbody tr:last-child { border-bottom: none; }
+    .appt-table tbody tr:hover { background: var(--page); }
+    .appt-table td {
+      padding: 10px 12px;
+      vertical-align: middle;
+    }
+
+    /* accent stripe via left border on first td */
+    .appt-table tbody tr td:first-child {
+      padding-left: 0;
+    }
+    .accent-cell {
+      display: flex; align-items: center;
+      padding-left: 0;
+    }
+    .accent-bar {
+      width: 3px; align-self: stretch; border-radius: 2px;
+      flex-shrink: 0; margin-right: 10px;
+    }
+
+    /* TIME cell */
+    .time-wrap { display: flex; align-items: center; gap: 4px; }
+    .time-text { font-size: 12px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .warn-icon { font-size: 11px; color: var(--warning); flex-shrink: 0; }
+
+    /* CUSTOMER cell */
+    .customer-cell { display: flex; align-items: center; gap: 8px; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+      letter-spacing: 0.03em;
+    }
+    .customer-name { font-size: 13px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+
+    /* PHONE */
+    .phone-link { font-size: 12px; color: var(--brand); text-decoration: none; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* VEHICLE */
+    .vehicle-text { font-size: 12px; font-weight: 600; color: var(--text-secondary); display: block; }
+    .vehicle-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: monospace; letter-spacing: 0.02em; }
+
+    /* TYPE badge — outlined */
+    .type-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 999px; padding: 2px 7px;
+      background: transparent;
+      white-space: nowrap;
+      border-width: 1px; border-style: solid;
+    }
+
+    /* STATUS chip — filled */
+    .status-chip {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 999px; padding: 2px 8px;
+      white-space: nowrap;
+    }
+
+    /* REP */
+    .rep-text { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ACTIONS */
+    .actions-cell { display: flex; align-items: center; gap: 2px; justify-content: flex-end; }
+    .act-btn {
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer;
+      border-radius: 6px; font-size: 14px;
+      color: var(--text-muted); transition: background 80ms, color 80ms;
+    }
+    .act-btn:hover { background: var(--page); }
+    .act-btn.green { color: var(--success); }
+    .act-btn.green:hover { background: var(--success-bg); }
+    .act-btn.brand { color: var(--brand); }
+    .act-btn.brand:hover { background: var(--brand-subtle); }
+
+    /* ── No-shows section ── */
+    .section-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--danger);
+      margin-bottom: 10px;
+    }
+    .no-show-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px;
+      background: var(--danger-bg);
+      border: 1px solid #FECACA;
+      border-radius: var(--radius);
+    }
+    .no-show-body { flex: 1; min-width: 0; }
+    .no-show-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .no-show-meta { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .no-show-vehicle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 11px; font-weight: 600; color: var(--text-secondary);
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ── Side panel hint (annotation) ── */
+    .annotation {
+      display: inline-block;
+      font-size: 10px; color: var(--text-muted);
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: 4px; padding: 2px 6px;
+      margin-left: 8px;
+      font-style: italic;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-bar { width: 3px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Appointments</div>
+      <div class="page-desc">Mar 31 – Apr 6 · 14 appointments</div>
+    </div>
+    <div class="week-nav">
+      <button class="btn-icon">‹</button>
+      <button class="btn-week-label">This Week</button>
+      <button class="btn-icon">›</button>
+    </div>
+  </div>
+
+  <div class="stack" style="padding-top: 8px;">
+
+    <!-- WEEK STRIP -->
+    <div class="card">
+      <div class="week-strip">
+
+        <div class="day-pill">
+          <span class="day-label">Mon</span>
+          <span class="day-num">31</span>
+          <span class="day-month">Mar</span>
+          <span class="day-badge">2</span>
+        </div>
+
+        <div class="day-pill">
+          <span class="day-label">Tue</span>
+          <span class="day-num">1</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge">3</span>
+        </div>
+
+        <div class="day-pill">
+          <span class="day-label">Wed</span>
+          <span class="day-num">2</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge empty">—</span>
+        </div>
+
+        <div class="day-pill selected">
+          <span class="day-label">Thu</span>
+          <span class="day-num">3</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge">7</span>
+        </div>
+
+        <div class="day-pill">
+          <span class="day-label">Fri</span>
+          <span class="day-num">4</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge">3</span>
+        </div>
+
+        <div class="day-pill">
+          <span class="day-label">Sat</span>
+          <span class="day-num">5</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge">1</span>
+        </div>
+
+        <div class="day-pill">
+          <span class="day-label">Sun</span>
+          <span class="day-num">6</span>
+          <span class="day-month">Apr</span>
+          <span class="day-badge empty">—</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SHOW RATE BANNER -->
+    <div class="show-banner">
+      <div class="banner-item">
+        <span class="dot" style="background: var(--success)"></span>
+        <span><strong style="color: var(--text-primary);">5 of 7</strong> showed this week</span>
+        <span class="pill-sm" style="color: var(--success); background: var(--success-bg);">71%</span>
+      </div>
+      <div class="banner-item" style="color: var(--warning);">
+        <span style="font-size: 13px;">⚠</span>
+        <strong>3 unconfirmed today</strong>
+      </div>
+    </div>
+
+    <!-- TABLE CARD -->
+    <div class="card">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <select class="filter-select">
+            <option>All Types</option>
+            <option>Test Drive</option>
+            <option>Close Deal</option>
+            <option>Negotiation</option>
+            <option>Pickup</option>
+            <option>Appointment</option>
+          </select>
+          <select class="filter-select">
+            <option>All Statuses</option>
+            <option>Scheduled</option>
+            <option>Unconfirmed</option>
+            <option>In Progress</option>
+            <option>Imminent</option>
+            <option>Arrived</option>
+            <option>No-Show</option>
+          </select>
+        </div>
+        <div class="toolbar-right">
+          <input class="search-input" type="text" placeholder="Search appointments…" />
+        </div>
+      </div>
+
+      <!-- Day heading -->
+      <div class="day-heading-row">
+        <span class="day-heading">Today — Thu Apr 3</span>
+        <span class="appt-count">7 appointments</span>
+      </div>
+
+      <!-- Table -->
+      <table class="appt-table">
+        <thead>
+          <tr>
+            <th style="width: 80px; padding-left: 16px;">Time</th>
+            <th style="width: 160px;">Customer</th>
+            <th style="width: 130px;">Phone</th>
+            <th style="min-width: 240px;">Vehicle</th>
+            <th style="width: 108px;">Type</th>
+            <th style="width: 60px;">Rep</th>
+            <th style="width: 112px;">Status</th>
+            <th style="width: 108px; text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Row 1 — Unconfirmed, Test Drive -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #4F46E5;"></div>
+                <div class="time-wrap">
+                  <span class="warn-icon">⚠</span>
+                  <span class="time-text">9:00 AM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #EEF2FF; color: #4F46E5;">SD</div>
+                <span class="customer-name">Sarah Delgado</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 312-4490</a></td>
+            <td>
+              <span class="vehicle-text">2025 Toyota Camry XSE · Midnight Black</span>
+              <span class="vehicle-meta">TY-9201 &nbsp;·&nbsp; 4T1BZ1HK4NU051823</span>
+            </td>
+            <td><span class="type-badge" style="color: #4F46E5; border-color: #4F46E5;">Test Drive</span></td>
+            <td><span class="rep-text">Mike R.</span></td>
+            <td><span class="status-chip" style="color: #D97706; background: #FFFBEB;">Unconfirmed</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn green" title="Mark Confirmed">✓</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 2 — Confirmed, Negotiation -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #D97706;"></div>
+                <div class="time-wrap">
+                  <span class="time-text">10:30 AM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #FFFBEB; color: #D97706;">MW</div>
+                <span class="customer-name">Marcus Webb</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 891-3344</a></td>
+            <td>
+              <span class="vehicle-text">2023 Honda CR-V EX-L</span>
+              <span class="vehicle-meta">HN-2290 &nbsp;·&nbsp; 2HKRW2H89PH512341</span>
+            </td>
+            <td><span class="type-badge" style="color: #D97706; border-color: #D97706;">Negotiation</span></td>
+            <td><span class="rep-text">Tom S.</span></td>
+            <td><span class="status-chip" style="color: #0369A1; background: #F0F9FF;">Scheduled</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3 — In Progress, Close Deal -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #16A34A;"></div>
+                <div class="time-wrap">
+                  <span class="time-text">12:30 PM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #F0FDF4; color: #16A34A;">JP</div>
+                <span class="customer-name">Jessica Parker</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 678-9901</a></td>
+            <td>
+              <span class="vehicle-text">2024 Ford Mustang GT · Race Red</span>
+              <span class="vehicle-meta">FD-8812 &nbsp;·&nbsp; 1FA6P8CF4N5100321</span>
+            </td>
+            <td><span class="type-badge" style="color: #16A34A; border-color: #16A34A;">Close Deal</span></td>
+            <td><span class="rep-text">Amy K.</span></td>
+            <td><span class="status-chip" style="color: #D97706; background: #FFFBEB;">In Progress</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 4 — Showed / Arrived, Close Deal -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #16A34A;"></div>
+                <div class="time-wrap">
+                  <span class="time-text">1:30 PM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #F0FDF4; color: #16A34A;">MT</div>
+                <span class="customer-name">Maria Torres</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 234-5678</a></td>
+            <td>
+              <span class="vehicle-text">2023 Honda CR-V EX-L AWD</span>
+              <span class="vehicle-meta">HN-3311 &nbsp;·&nbsp; 2HKRW2H83PH600987</span>
+            </td>
+            <td><span class="type-badge" style="color: #16A34A; border-color: #16A34A;">Close Deal</span></td>
+            <td><span class="rep-text">Tom S.</span></td>
+            <td><span class="status-chip" style="color: #16A34A; background: #F0FDF4;">Arrived</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 5 — Unconfirmed, Test Drive -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #4F46E5;"></div>
+                <div class="time-wrap">
+                  <span class="warn-icon">⚠</span>
+                  <span class="time-text">2:00 PM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #EEF2FF; color: #4F46E5;">ES</div>
+                <span class="customer-name">Emma Stone</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 678-2210</a></td>
+            <td>
+              <span class="vehicle-text">2018 Honda CR-V</span>
+              <span class="vehicle-meta">HN-9921 &nbsp;·&nbsp; 2HKRW6H37JH412398</span>
+            </td>
+            <td><span class="type-badge" style="color: #4F46E5; border-color: #4F46E5;">Test Drive</span></td>
+            <td><span class="rep-text">Mike R.</span></td>
+            <td><span class="status-chip" style="color: #D97706; background: #FFFBEB;">Unconfirmed</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn green" title="Mark Confirmed">✓</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 6 — Imminent, Negotiation -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #D97706;"></div>
+                <div class="time-wrap">
+                  <span class="time-text">3:00 PM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #FFFBEB; color: #D97706;">DC</div>
+                <span class="customer-name">Daniel Craig</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 901-3344</a></td>
+            <td>
+              <span class="vehicle-text">2020 Toyota RAV4</span>
+              <span class="vehicle-meta">TY-7743 &nbsp;·&nbsp; 2T3P1RFV1LW098432</span>
+            </td>
+            <td><span class="type-badge" style="color: #D97706; border-color: #D97706;">Negotiation</span></td>
+            <td><span class="rep-text">Amy K.</span></td>
+            <td><span class="status-chip" style="color: #EA580C; background: #FFF7ED;">Imminent</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 7 — Unconfirmed, Pickup -->
+          <tr>
+            <td>
+              <div class="accent-cell">
+                <div class="accent-bar" style="background: #0369A1;"></div>
+                <div class="time-wrap">
+                  <span class="warn-icon">⚠</span>
+                  <span class="time-text">4:30 PM</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="customer-cell">
+                <div class="avatar" style="background: #F0F9FF; color: #0369A1;">JC</div>
+                <span class="customer-name">James Carter</span>
+              </div>
+            </td>
+            <td><a class="phone-link" href="#">(555) 445-7821</a></td>
+            <td>
+              <span class="vehicle-text">2022 Ford Explorer</span>
+              <span class="vehicle-meta">FD-4411 &nbsp;·&nbsp; 1FMSK8DH9NGA12345</span>
+            </td>
+            <td><span class="type-badge" style="color: #0369A1; border-color: #0369A1;">Pickup</span></td>
+            <td><span class="rep-text">Tom S.</span></td>
+            <td><span class="status-chip" style="color: #D97706; background: #FFFBEB;">Unconfirmed</span></td>
+            <td>
+              <div class="actions-cell">
+                <button class="act-btn brand" title="Chat">💬</button>
+                <button class="act-btn green" title="Mark Confirmed">✓</button>
+                <button class="act-btn" title="Mark Visited" style="font-size: 13px;">🪪</button>
+                <button class="act-btn" title="Reschedule" style="font-size: 13px;">↺</button>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- Legend -->
+      <div class="legend">
+        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-right: 4px;">Type accent:</span>
+        <div class="legend-item"><div class="legend-bar" style="background: #4F46E5;"></div> Test Drive</div>
+        <div class="legend-item"><div class="legend-bar" style="background: #16A34A;"></div> Close Deal</div>
+        <div class="legend-item"><div class="legend-bar" style="background: #D97706;"></div> Negotiation</div>
+        <div class="legend-item"><div class="legend-bar" style="background: #0369A1;"></div> Pickup</div>
+
+        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-left: 12px; margin-right: 4px;">Status:</span>
+        <div class="legend-item"><div class="legend-dot" style="background: #0369A1;"></div> Scheduled</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #D97706;"></div> Unconfirmed</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #D97706;"></div> In Progress</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #EA580C;"></div> Imminent</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #16A34A;"></div> Arrived</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #DC2626;"></div> No-Show</div>
+      </div>
+
+    </div>
+
+    <!-- NO-SHOWS SECTION -->
+    <div>
+      <div class="section-label">
+        <span>👤</span> No-Shows · All Week
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+
+        <div class="no-show-card">
+          <div class="no-show-body">
+            <div class="no-show-name">Nina Patel</div>
+            <div class="no-show-meta">Mon Mar 31 · 2:00 PM · Tom S.</div>
+            <div class="no-show-vehicle">2023 Subaru Outback XT</div>
+          </div>
+          <button class="btn-ghost">Reschedule →</button>
+        </div>
+
+        <div class="no-show-card">
+          <div class="no-show-body">
+            <div class="no-show-name">Ryan Brooks</div>
+            <div class="no-show-meta">Tue Apr 1 · 3:00 PM · Tom S.</div>
+            <div class="no-show-vehicle">2022 Jeep Wrangler Sport</div>
+          </div>
+          <button class="btn-ghost">Reschedule →</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ANNOTATION CALLOUTS -->
+    <div style="border: 1px dashed #CBD5E1; border-radius: 8px; padding: 16px; background: #F8FAFC;">
+      <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #94A3B8; margin-bottom: 10px;">Design notes</p>
+      <ul style="font-size: 12px; color: #64748B; line-height: 1.8; padding-left: 16px;">
+        <li>Row click anywhere (except action buttons) opens the <strong>side panel</strong> (380px, portal, Vini summary + vehicle detail + CTAs)</li>
+        <li>Action buttons: <strong>Chat</strong> always visible · <strong>Confirm</strong> (green) only for unconfirmed · <strong>Visited</strong> for unconfirmed + confirmed · <strong>Reschedule</strong> for all except Arrived</li>
+        <li>Type badge is <strong>outlined</strong> (border, no fill). Status chip is <strong>filled</strong>.</li>
+        <li>Avatar initials = first letter of first + last name, colored to match appointment type</li>
+        <li>⚠ warning icon only appears on unconfirmed rows, inline with time</li>
+        <li>Left accent bar color matches appointment type (same color as type badge)</li>
+        <li>Week strip (above) handles date navigation — no tabs needed</li>
+        <li>Vehicle column: name (bold) + Stock # + VIN on second line (monospace, muted)</li>
+        <li>Toolbar filters: Type + Status dropdowns + Search, all local state, live-filter rows</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

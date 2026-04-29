@@ -1,0 +1,625 @@
+<!--
+════════════════════════════════════════════════════════════════════════════════
+LLM PROMPT TEMPLATES FOR MICRO-NARRATIVE GENERATION
+════════════════════════════════════════════════════════════════════════════════
+
+These templates are used by the n8n workflow to generate personalized insights.
+Each template produces safe, positive, non-guaranteeing copy.
+
+────────────────────────────────────────────────────────────────────────────────
+T1: HERO_INSIGHT
+────────────────────────────────────────────────────────────────────────────────
+SYSTEM PROMPT:
+You are a concise business writer creating a single-sentence insight for a 
+monthly performance email. Your tone is warm, confident, and factual. 
+Never mention competitors. Never promise revenue or conversion lifts. 
+Avoid "will increase" — use "can help", "often", "typically" instead.
+Do not use exclamation marks. Do not use the word "LLM" or mention AI systems.
+
+USER PROMPT:
+Write ONE sentence (18-22 words max) summarizing the hero metric for this dealer.
+
+Dealer: {dealerName}
+Period: {periodLabel}
+Metrics: {metrics}
+
+Focus on the backgroundingRate and totalVinsProcessed.
+Frame it as a positive outcome without guarantees.
+
+OUTPUT CONSTRAINTS:
+- Exactly 1 sentence
+- 18-22 words
+- No exclamation marks
+- No revenue/sales promises
+- Must reference the dealer's inventory or visual consistency
+
+────────────────────────────────────────────────────────────────────────────────
+T2: TRANSFORMATION_INSIGHT
+────────────────────────────────────────────────────────────────────────────────
+SYSTEM PROMPT:
+You are a concise business writer creating a single-sentence insight for a 
+monthly performance email. Your tone is warm, confident, and factual. 
+Never mention competitors. Never promise revenue or conversion lifts. 
+Avoid "will increase" — use "can help", "often", "typically" instead.
+Do not use exclamation marks. Do not use the word "LLM" or mention AI systems.
+
+USER PROMPT:
+Write ONE sentence (18-22 words max) about the transformation from raw to 
+enhanced inventory for this dealer.
+
+Dealer: {dealerName}
+Period: {periodLabel}
+Metrics: {metrics}
+
+Focus on the contrast between rawVins percentage and spyneEnhanced percentage.
+Frame it as reducing friction or improving buyer experience.
+
+OUTPUT CONSTRAINTS:
+- Exactly 1 sentence
+- 18-22 words
+- No exclamation marks
+- No revenue/sales promises
+- Must reference visual consistency or buyer experience
+
+────────────────────────────────────────────────────────────────────────────────
+T3: FEATURE_NUDGE
+────────────────────────────────────────────────────────────────────────────────
+SYSTEM PROMPT:
+You are a concise business writer creating a single-sentence insight for a 
+monthly performance email. Your tone is warm, confident, and factual. 
+Never mention competitors. Never promise revenue or conversion lifts. 
+Avoid "will increase" — use "can help", "often", "typically" instead.
+Do not use exclamation marks. Do not use the word "LLM" or mention AI systems.
+
+USER PROMPT:
+Write ONE sentence (18-22 words max) gently suggesting the next feature 
+opportunity for this dealer based on their feature adoption.
+
+Dealer: {dealerName}
+Period: {periodLabel}
+FeatureAdoption: {featureAdoption}
+
+If Videos is "Not activated", suggest video as the next step.
+If Videos is active but Media Kit is off, suggest Media Kit.
+Otherwise, suggest Conversational Sales Assistant.
+
+OUTPUT CONSTRAINTS:
+- Exactly 1 sentence
+- 18-22 words
+- No exclamation marks
+- No revenue/sales promises
+- Must be a soft suggestion, not a command
+- Use "can help", "often helps", "typically" language
+
+────────────────────────────────────────────────────────────────────────────────
+T4: CTA_COPY
+────────────────────────────────────────────────────────────────────────────────
+SYSTEM PROMPT:
+You are a UX copywriter creating a call-to-action button label and rationale 
+for a monthly performance email. Your tone is confident but not pushy.
+Never mention competitors. Never promise revenue or conversion lifts.
+Do not use exclamation marks. Do not use the word "LLM" or mention AI systems.
+
+USER PROMPT:
+Generate a CTA button label (4-6 words) and a one-line rationale (10-15 words) 
+for the next recommended feature.
+
+Dealer: {dealerName}
+Period: {periodLabel}
+FeatureAdoption: {featureAdoption}
+NextRecommendedFeature: {nextFeature}
+
+The button should encourage exploration, not commitment.
+
+OUTPUT CONSTRAINTS:
+- Button label: 4-6 words, action-oriented, no exclamation marks
+- Rationale: 10-15 words, supportive tone
+- Output format: JSON with keys "buttonLabel" and "rationale"
+
+════════════════════════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your December with Spyne</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F5F7FB; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #F5F7FB;">
+<tr>
+<td align="center" style="padding: 32px 16px;">
+<table border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px;">
+<tr>
+<td style="background-color: #0B1B3A; padding: 56px 48px; border-radius: 16px 16px 0 0;" align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="padding-bottom: 28px;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="font-size: 13px; font-weight: bold; color: #4F46E5; letter-spacing: 4px;">SPYNE</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #FFFFFF; font-size: 32px; font-weight: bold; line-height: 1.25; padding-bottom: 12px;">Your December<br/>with Spyne</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 14px; letter-spacing: 0.3px;">Joseph Toyota · Visual Performance Recap</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 48px 40px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #0B1B3A; font-size: 26px; font-weight: bold; line-height: 1.35; padding-bottom: 28px;">100% of your inventory<br/>went showroom-ready<br/>this month</td>
+</tr>
+<tr>
+<td style="padding-bottom: 10px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #E9EEF7; border-radius: 10px;">
+<tr>
+<td style="padding: 3px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="background-color: #16A34A; height: 14px; width: 100%; border-radius: 8px;"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="padding-bottom: 20px;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="color: #16A34A; font-size: 28px; font-weight: bold;">100%</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #6B7280; font-size: 14px; line-height: 1.6; padding-bottom: 20px; font-style: italic;">Your listings stayed visually consistent across almost every vehicle this month.</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 13px;">392 vehicles upgraded · 11,760 images enhanced</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #F5F7FB; height: 8px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;"></td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 48px 40px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #6B7280; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 28px;">The Transformation</td>
+</tr>
+<tr>
+<td style="padding-bottom: 20px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #94A3B8; font-size: 12px; padding-bottom: 8px;">Raw Inventory</td>
+</tr>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #E9EEF7; border-radius: 8px;">
+<tr>
+<td style="padding: 3px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="background-color: #94A3B8; height: 10px; width: 5%; border-radius: 6px;"></td>
+<td style="height: 10px; width: 95%;"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="color: #94A3B8; font-size: 11px; padding-top: 6px;">5%</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom: 24px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #0B1B3A; font-size: 12px; font-weight: 600; padding-bottom: 8px;">Spyne Enhanced</td>
+</tr>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #E9EEF7; border-radius: 8px;">
+<tr>
+<td style="padding: 3px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="background-color: #4F46E5; height: 10px; width: 95%; border-radius: 6px;"></td>
+<td style="height: 10px; width: 5%;"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="color: #4F46E5; font-size: 11px; font-weight: bold; padding-top: 6px;">95%</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #6B7280; font-size: 14px; font-style: italic; line-height: 1.6; padding-bottom: 32px;">Consistent presentation reduces buyer friction during comparison shopping.</td>
+</tr>
+<tr>
+<td style="padding: 16px; background-color: #F5F7FB; border-radius: 12px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<img src="https://cdn.spyne.ai/email-assets/before-after.jpg" width="488" height="220" alt="Example: raw photo vs Spyne studio background" style="display: block; border: 0; border-radius: 8px; max-width: 100%;" />
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 11px; padding-top: 12px;">Before vs After: The Spyne difference</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #0B1B3A; padding: 48px 40px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #FFFFFF; font-size: 22px; font-weight: bold; line-height: 1.4; padding-bottom: 28px;">From shoot to live<br/>in just 12 hours</td>
+</tr>
+<tr>
+<td style="padding-bottom: 10px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #1E3A5F; border-radius: 8px;">
+<tr>
+<td style="padding: 3px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="background-color: #4F46E5; height: 12px; width: 25%; border-radius: 6px;"></td>
+<td style="height: 12px; width: 75%;"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding-bottom: 6px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #FFFFFF; font-size: 13px; font-weight: bold;">12 hrs</td>
+<td align="right" style="color: #64748B; font-size: 11px;">Industry avg: 48 hrs</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 13px; padding-top: 20px;">≈4× faster than traditional workflows</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 48px 40px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #6B7280; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 24px;">Your Feature Scoreboard</td>
+</tr>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+<tr>
+<td style="background-color: #ECFDF3; padding: 16px 20px; border-bottom: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #0B1B3A; font-size: 14px; font-weight: 600;">Studio Backgrounding</td>
+<td align="center" width="90" style="font-size: 10px; letter-spacing: 3px; color: #16A34A;">● ● ● ● ●</td>
+<td align="right" width="80">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #DCFCE7; color: #16A34A; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 10px;">Active</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #ECFDF3; padding: 16px 20px; border-bottom: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #0B1B3A; font-size: 14px; font-weight: 600;">360° Spins</td>
+<td align="center" width="90" style="font-size: 10px; letter-spacing: 3px; color: #16A34A;">● ● ● ● ●</td>
+<td align="right" width="80">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #DCFCE7; color: #16A34A; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 10px;">Active</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 16px 20px; border-bottom: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #6B7280; font-size: 14px;">Videos</td>
+<td align="center" width="90" style="font-size: 10px; letter-spacing: 3px;"><font color="#4F46E5">●</font><font color="#D1D5DB"> ○ ○ ○ ○</font></td>
+<td align="right" width="80">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #F3F4F6; color: #6B7280; font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 10px;">Not activated</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 16px 20px; border-bottom: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #9CA3AF; font-size: 14px;">Media Kit</td>
+<td align="center" width="90" style="font-size: 10px; letter-spacing: 3px; color: #D1D5DB;">○ ○ ○ ○ ○</td>
+<td align="right" width="80">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #F3F4F6; color: #9CA3AF; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 10px;">Off</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 16px 20px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #9CA3AF; font-size: 14px;">Sales Assistant</td>
+<td align="center" width="90" style="font-size: 10px; letter-spacing: 3px; color: #D1D5DB;">○ ○ ○ ○ ○</td>
+<td align="right" width="80">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #F3F4F6; color: #9CA3AF; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 10px;">Off</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #6B7280; font-size: 14px; font-style: italic; line-height: 1.6; padding-top: 24px;">Next step: adding video can help your best inventory stand out faster.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #F5F7FB; height: 8px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;"></td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 40px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #0B1B3A; font-size: 16px; font-weight: 600; padding-bottom: 20px;">1 issue raised this month</td>
+</tr>
+<tr>
+<td style="padding-bottom: 10px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #E9EEF7; border-radius: 8px;">
+<tr>
+<td style="padding: 3px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="background-color: #16A34A; height: 10px; width: 100%; border-radius: 6px;"></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="color: #16A34A; font-size: 12px; font-weight: bold;">100% resolved</td>
+<td align="right" style="color: #6B7280; font-size: 12px;">in 30 mins</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #6B7280; font-size: 13px; font-style: italic; padding-top: 20px;">All issues resolved without disrupting your inventory workflow.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #F5F7FB; height: 8px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;"></td>
+</tr>
+<tr>
+<td style="background-color: #FFFFFF; padding: 40px; border-left: 1px solid #E5E7EB; border-right: 1px solid #E5E7EB;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="color: #6B7280; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 20px;">Your Feedback in Action</td>
+</tr>
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="padding: 10px 0; border-bottom: 1px solid #F3F4F6;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top" style="color: #16A34A; font-size: 14px; padding-right: 12px;">✓</td>
+<td style="color: #0B1B3A; font-size: 14px;">In-app sequencing improvements</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding: 10px 0; border-bottom: 1px solid #F3F4F6;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top" style="color: #16A34A; font-size: 14px; padding-right: 12px;">✓</td>
+<td style="color: #0B1B3A; font-size: 14px;">Scanner accuracy fixes</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding: 10px 0;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top" style="color: #16A34A; font-size: 14px; padding-right: 12px;">✓</td>
+<td style="color: #0B1B3A; font-size: 14px;">New vs old car tagging</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #0B1B3A; padding: 48px 40px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center" style="padding-bottom: 8px;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="color: #4F46E5; font-size: 28px;">✦</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #FFFFFF; font-size: 20px; font-weight: bold; line-height: 1.4; padding-bottom: 10px;">You've unlocked</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 14px; line-height: 1.6; padding-bottom: 28px;">Consistent, studio-grade inventory visuals<br/>that build buyer confidence</td>
+</tr>
+<tr>
+<td style="padding-bottom: 28px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #1E3A5F; border-radius: 10px; border: 1px solid #334155;">
+<tr>
+<td style="padding: 16px 20px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="color: #64748B; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 4px;">Next unlock</td>
+</tr>
+<tr>
+<td style="color: #FFFFFF; font-size: 14px;">Video walkarounds for higher engagement</td>
+</tr>
+</table>
+</td>
+<td align="right" valign="middle">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="color: #4F46E5; font-size: 20px;">→</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding: 16px; background-color: #1E3A5F; border-radius: 10px; margin-bottom: 24px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td align="center">
+<img src="https://cdn.spyne.ai/email-assets/video-preview.jpg" width="488" height="180" alt="Preview: video walkaround style example" style="display: block; border: 0; border-radius: 8px; max-width: 100%;" />
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #64748B; font-size: 11px; padding-top: 12px;">Preview: Video walkaround example</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td height="24"></td>
+</tr>
+<tr>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="background-color: #4F46E5; border-radius: 8px;">
+<a href="#" style="display: inline-block; padding: 16px 32px; color: #FFFFFF; font-size: 14px; font-weight: bold; text-decoration: none;">Explore Video for Your Inventory</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #64748B; font-size: 12px; padding-top: 16px;">Want a quick enablement? Reply to this email.</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td style="background-color: #0B1B3A; padding: 0 40px 40px 40px; border-radius: 0 0 16px 16px;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td style="border-top: 1px solid #1E3A5F; padding-top: 32px;"></td>
+</tr>
+<tr>
+<td align="center" style="color: #64748B; font-size: 12px; line-height: 1.6; padding-bottom: 16px;">You're receiving this as part of your Spyne account updates.</td>
+</tr>
+<tr>
+<td align="center" style="padding-bottom: 20px;">
+<table border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="padding: 0 8px;">
+<a href="#" style="color: #64748B; font-size: 12px; text-decoration: underline;">Manage preferences</a>
+</td>
+<td style="color: #475569;">·</td>
+<td style="padding: 0 8px;">
+<a href="#" style="color: #64748B; font-size: 12px; text-decoration: underline;">Contact support</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td align="center" style="color: #94A3B8; font-size: 13px;">— Team Spyne</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>

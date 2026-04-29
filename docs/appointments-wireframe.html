@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointments Page — Wireframe</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #F8FAFC; color: #0F172A; font-size: 13px; }
+
+    /* ── Layout ── */
+    .page { display: flex; gap: 20px; padding: 24px; min-height: 100vh; align-items: flex-start; }
+    .left  { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+    .right { width: 300px; flex-shrink: 0; position: sticky; top: 24px; }
+
+    /* ── Shared card ── */
+    .card { background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; }
+
+    /* ── Header bar ── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .page-title  { font-size: 18px; font-weight: 700; }
+    .header-controls { display: flex; align-items: center; gap: 8px; }
+    .ctrl { display: flex; align-items: center; gap: 5px; border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 10px; font-size: 12px; color: #475569; background: #fff; cursor: pointer; white-space: nowrap; }
+    .ctrl svg { width: 12px; height: 12px; }
+    .search-box { display: flex; align-items: center; gap-5px; border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 10px; font-size: 12px; color: #94A3B8; background: #fff; width: 180px; }
+    .view-toggle { display: flex; border: 1px solid #CBD5E1; border-radius: 8px; overflow: hidden; }
+    .view-toggle button { padding: 5px 8px; background: #fff; border: none; cursor: pointer; color: #94A3B8; }
+    .view-toggle button.active { background: #F1F5F9; color: #0F172A; }
+
+    /* ── Section label (Today / Tomorrow / Later) ── */
+    .section-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .section-label-text { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #94A3B8; }
+    .section-label-line { flex: 1; height: 1px; background: #E2E8F0; }
+    .section-count { font-size: 11px; font-weight: 600; color: #fff; background: #4F46E5; border-radius: 99px; padding: 1px 7px; }
+    .section-count.warn { background: #F59E0B; }
+    .section-count.muted { background: #CBD5E1; color: #64748B; }
+
+    /* ── Appointment card grid ── */
+    .appt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+
+    .appt-card { border: 1px solid #E2E8F0; border-radius: 12px; background: #fff; padding: 12px; display: flex; flex-direction: column; gap: 9px; cursor: pointer; transition: box-shadow .15s; }
+    .appt-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+
+    .appt-card-top    { display: flex; align-items: center; justify-content: space-between; }
+    .appt-card-name   { font-size: 14px; font-weight: 700; color: #0F172A; }
+    .appt-card-meta   { display: flex; flex-direction: column; gap: 4px; }
+    .appt-card-row    { display: flex; align-items: center; gap-5px; font-size: 12px; color: #475569; gap: 5px; }
+    .appt-card-footer { display: flex; align-items: center; gap: 5px; font-size: 11px; border-top: 1px solid #F1F5F9; padding-top: 8px; margin-top: 2px; }
+
+    /* ── Badges ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; border-radius: 99px; padding: 2px 8px; white-space: nowrap; }
+    .badge-appt       { background: #EEF2FF; color: #4F46E5; border: 1px solid #C7D2FE; }
+    .badge-testdrive  { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+    .badge-negotiation{ background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+    .badge-closedeal  { background: #F8FAFC; color: #64748B; border: 1px solid #CBD5E1; }
+    .badge-pickup     { background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; }
+
+    /* ── Status footer states ── */
+    .status-started  { color: #94A3B8; }
+    .status-showed   { color: #16A34A; font-weight: 600; }
+    .status-soon     { color: #E11D48; font-weight: 600; }
+    .status-upcoming { color: #94A3B8; }
+
+    /* ── Time chip ── */
+    .time-chip { font-size: 11px; font-weight: 600; color: #475569; background: #F1F5F9; border-radius: 6px; padding: 2px 6px; }
+
+    /* ── Calendar (right) ── */
+    .cal-header { padding: 14px 16px 10px; border-bottom: 1px solid #F1F5F9; }
+    .cal-title  { font-size: 13px; font-weight: 700; color: #0F172A; }
+    .cal-body   { padding: 8px 12px; }
+    .cal-slot   { display: flex; gap: 8px; min-height: 44px; position: relative; }
+    .cal-time   { width: 48px; font-size: 10px; color: #94A3B8; padding-top: 3px; text-align: right; flex-shrink: 0; }
+    .cal-lane   { flex: 1; padding-top: 3px; display: flex; gap: 4px; border-top: 1px solid #F1F5F9; flex-wrap: wrap; align-content: flex-start; }
+    .cal-event  { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; border-radius: 6px; padding: 2px 6px; white-space: nowrap; }
+    .cal-event.appt  { background: #EEF2FF; color: #4F46E5; }
+    .cal-event.test  { background: #EFF6FF; color: #2563EB; }
+    .cal-event.neg   { background: #FFF1F2; color: #E11D48; }
+    .cal-event.pick  { background: #F0FDF4; color: #16A34A; }
+    .cal-event.close { background: #F8FAFC; color: #64748B; }
+    .cal-now-line { height: 2px; background: #4F46E5; flex: 1; margin-top: 5px; }
+
+    /* ── Icons (inline SVG helpers) ── */
+    .ico { display: inline-block; width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* ── Annotations ── */
+    .annotation { font-size: 11px; color: #94A3B8; font-style: italic; margin-top: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+
+    <!-- Header -->
+    <div class="page-header">
+      <span class="page-title">My Appointments</span>
+      <div class="header-controls">
+        <div class="search-box">🔍 &nbsp;Search</div>
+        <div class="ctrl">Sort ▾</div>
+        <div class="ctrl">Date ▾</div>
+        <div class="ctrl">More filters ▾</div>
+        <div class="view-toggle">
+          <button class="active" title="Card view">⊞</button>
+          <button title="List view">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────────────────── TODAY ───────────────────── -->
+    <div>
+      <div class="section-label">
+        <span class="section-label-text">Today</span>
+        <span class="section-count">7</span>
+        <div class="section-label-line"></div>
+      </div>
+
+      <div class="appt-grid">
+
+        <!-- Card 1: started -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-appt">Appointment</span>
+            <span class="time-chip">10:00 – 11:00 AM</span>
+          </div>
+          <div class="appt-card-name">Rob Pattinson</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Emily</div>
+            <div class="appt-card-row">💰 $10,000 – $20,000</div>
+            <div class="appt-card-row">🚗 2016 Mazda CX-5</div>
+          </div>
+          <div class="appt-card-footer status-started">🕐 Started 3 hours ago</div>
+        </div>
+
+        <!-- Card 2: showed up -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-closedeal">Close Deal</span>
+            <span class="time-chip">12:30 – 1:00 PM</span>
+          </div>
+          <div class="appt-card-name">Rob Pattinson</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Emily</div>
+            <div class="appt-card-row">💰 $10,000 – $20,000</div>
+            <div class="appt-card-row">🚗 2016 Mazda CX-5</div>
+          </div>
+          <div class="appt-card-footer status-showed">✓ Showed up</div>
+        </div>
+
+        <!-- Card 3: starts soon -->
+        <div class="appt-card" style="border-left: 3px solid #E11D48;">
+          <div class="appt-card-top">
+            <span class="badge badge-testdrive">Test Drive</span>
+            <span class="time-chip">12:30 – 1:00 PM</span>
+          </div>
+          <div class="appt-card-name">Rob Pattinson</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Emily</div>
+            <div class="appt-card-row">💰 $10,000 – $20,000</div>
+            <div class="appt-card-row">🚗 2016 Mazda CX-5</div>
+          </div>
+          <div class="appt-card-footer status-soon">🔴 Starts in 10 mins</div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-negotiation">Negotiation</span>
+            <span class="time-chip">1:30 – 2:00 PM</span>
+          </div>
+          <div class="appt-card-name">Emma Stone</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Incoming Call from John</div>
+            <div class="appt-card-row">💰 $15,000 – $25,000</div>
+            <div class="appt-card-row">🚗 2018 Honda CR-V</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">🕐 Starts in 1 hour</div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-pickup">Pickup</span>
+            <span class="time-chip">1:30 – 2:00 PM</span>
+          </div>
+          <div class="appt-card-name">Emma Stone</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Incoming Call from John</div>
+            <div class="appt-card-row">💰 $15,000 – $25,000</div>
+            <div class="appt-card-row">🚗 2018 Honda CR-V</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">🕐 Starts in 1 hour</div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-negotiation">Negotiation</span>
+            <span class="time-chip">2:00 – 2:30 PM</span>
+          </div>
+          <div class="appt-card-name">Daniel Craig</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Email Sent by Sarah</div>
+            <div class="appt-card-row">💰 $20,000 – $30,000</div>
+            <div class="appt-card-row">🚗 2020 Toyota RAV4</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">🕐 Starts in 1 hour</div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-testdrive">Test Drive</span>
+            <span class="time-chip">3:00 – 3:30 PM</span>
+          </div>
+          <div class="appt-card-name">James Carter</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Marcus</div>
+            <div class="appt-card-row">💰 $25,000 – $35,000</div>
+            <div class="appt-card-row">🚗 2022 Ford Explorer</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">🕐 Starts in 2 hours</div>
+        </div>
+
+      </div><!-- /today grid -->
+    </div>
+
+    <!-- ───────────────────── TOMORROW ───────────────────── -->
+    <div>
+      <div class="section-label">
+        <span class="section-label-text">Tomorrow</span>
+        <span class="section-count warn">3</span>
+        <div class="section-label-line"></div>
+      </div>
+      <div class="appt-grid">
+
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-appt">Appointment</span>
+            <span class="time-chip">10:00 – 11:00 AM</span>
+          </div>
+          <div class="appt-card-name">Sarah Mitchell</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Incoming Call from Jake</div>
+            <div class="appt-card-row">💰 $30,000 – $40,000</div>
+            <div class="appt-card-row">🚗 2023 Audi Q5</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">📅 Tomorrow 10:00 AM</div>
+        </div>
+
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-testdrive">Test Drive</span>
+            <span class="time-chip">1:00 – 1:30 PM</span>
+          </div>
+          <div class="appt-card-name">Kevin Walsh</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Emily</div>
+            <div class="appt-card-row">💰 $20,000 – $28,000</div>
+            <div class="appt-card-row">🚗 2021 Chevy Equinox</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">📅 Tomorrow 1:00 PM</div>
+        </div>
+
+        <div class="appt-card">
+          <div class="appt-card-top">
+            <span class="badge badge-closedeal">Close Deal</span>
+            <span class="time-chip">3:30 – 4:00 PM</span>
+          </div>
+          <div class="appt-card-name">Diana Torres</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Incoming Call from Marcus</div>
+            <div class="appt-card-row">💰 $33,000 – $38,000</div>
+            <div class="appt-card-row">🚗 2024 Toyota RAV4 XLE</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">📅 Tomorrow 3:30 PM</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ───────────────────── LATER ───────────────────── -->
+    <div>
+      <div class="section-label">
+        <span class="section-label-text">Later this week</span>
+        <span class="section-count muted">5</span>
+        <div class="section-label-line"></div>
+      </div>
+      <div class="appt-grid">
+
+        <div class="appt-card" style="opacity: 0.8;">
+          <div class="appt-card-top">
+            <span class="badge badge-appt">Appointment</span>
+            <span class="time-chip">Thu · 11:00 AM</span>
+          </div>
+          <div class="appt-card-name">Marcus Webb</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Re-engaged via SMS</div>
+            <div class="appt-card-row">💰 $36,000 – $42,000</div>
+            <div class="appt-card-row">🚗 2023 Honda CR-V EX-L</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">📅 Thu, Apr 4</div>
+        </div>
+
+        <div class="appt-card" style="opacity: 0.8;">
+          <div class="appt-card-top">
+            <span class="badge badge-negotiation">Negotiation</span>
+            <span class="time-chip">Fri · 2:00 PM</span>
+          </div>
+          <div class="appt-card-name">Fleet Auto Group</div>
+          <div class="appt-card-meta">
+            <div class="appt-card-row">↔ Outgoing Call by Sarah</div>
+            <div class="appt-card-row">💰 Fleet — 12 vehicles</div>
+            <div class="appt-card-row">🚗 2024 Ford Transit 150</div>
+          </div>
+          <div class="appt-card-footer status-upcoming">📅 Fri, Apr 5</div>
+        </div>
+
+      </div>
+      <div class="annotation" style="padding-left: 2px;">+ 3 more appointments this week</div>
+    </div>
+
+  </div><!-- /left -->
+
+
+  <!-- RIGHT PANEL — Daily Calendar -->
+  <div class="right">
+    <div class="card">
+      <div class="cal-header">
+        <div class="cal-title">2 April 2026</div>
+        <div style="font-size:11px; color:#94A3B8; margin-top:2px;">Today · 7 appointments</div>
+      </div>
+      <div class="cal-body">
+
+        <div class="cal-slot">
+          <div class="cal-time">9:00 am</div>
+          <div class="cal-lane">
+            <span class="cal-event appt">Store Visit – Rob</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">9:30</div>
+          <div class="cal-lane"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">10:00</div>
+          <div class="cal-lane">
+            <span class="cal-event appt">Appointment – Rob</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">10:30</div>
+          <div class="cal-lane"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">11:00</div>
+          <div class="cal-lane">
+            <span class="cal-event test">Test Drive – Rob</span>
+          </div>
+        </div>
+
+        <!-- NOW LINE -->
+        <div class="cal-slot" style="align-items: center;">
+          <div class="cal-time" style="color:#4F46E5; font-weight:700;">11:42</div>
+          <div class="cal-lane" style="border-top: 2px solid #4F46E5; padding-top: 0;"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">12:00</div>
+          <div class="cal-lane"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">12:30</div>
+          <div class="cal-lane">
+            <span class="cal-event close">Close Deal – Rob</span>
+            <span class="cal-event test">Test Drive – Rob</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">1:00</div>
+          <div class="cal-lane">
+            <span class="cal-event neg">Negotiation – Emma</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">1:30</div>
+          <div class="cal-lane">
+            <span class="cal-event test">Test Drive – Emma</span>
+            <span class="cal-event pick">Pickup – Emma</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">2:00</div>
+          <div class="cal-lane">
+            <span class="cal-event neg">Negotiation – Daniel</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">2:30</div>
+          <div class="cal-lane"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">3:00</div>
+          <div class="cal-lane">
+            <span class="cal-event test">Test Drive – James</span>
+          </div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">3:30</div>
+          <div class="cal-lane"></div>
+        </div>
+
+        <div class="cal-slot">
+          <div class="cal-time">4:00</div>
+          <div class="cal-lane"></div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /right -->
+
+</div><!-- /page -->
+
+</body>
+</html>
