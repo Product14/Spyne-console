@@ -63,6 +63,8 @@ export default function StudioPage() {
 
   return (
     <div className={cn(max2Layout.pageStack)}>
+      {/* Holding cost first-run modal — temporarily disabled per product request.
+          Restore by uncommenting the JSX below.
       <HoldingCostSetupModals
         open={holdingCostFteOpen}
         onOpenChange={setHoldingCostFteOpen}
@@ -70,6 +72,7 @@ export default function StudioPage() {
         firstRunEyebrow="Quick setup"
         firstRunSubtitle="Set your daily holding cost per vehicle so Merchandising and Lot Overview metrics reflect real carry."
       />
+      */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className={max2Classes.pageTitle}>
@@ -101,6 +104,7 @@ export default function StudioPage() {
 
       <MerchandisingSummary />
 
+      {/* Dev trigger for the holding cost modal — disabled while the modal itself is hidden.
       <button
         type="button"
         onClick={() => setHoldingCostFteOpen(true)}
@@ -117,6 +121,7 @@ export default function StudioPage() {
           </span>
         </span>
       </button>
+      */}
     </div>
   )
 }
