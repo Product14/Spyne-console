@@ -1149,11 +1149,6 @@ function InventoryBreakdown({
         : "These listings are invisible to shoppers",
       count: breakdown.noPhotos,
       iconWell: spyneComponentClasses.insightRowIconWellCritical,
-      cta: smartMatchApplied
-        ? undefined
-        : breakdown.noPhotos > 0
-          ? { label: "Apply Smart Match", onClick: onApplySmartMatch }
-          : undefined,
     },
     {
       key: "stock",
