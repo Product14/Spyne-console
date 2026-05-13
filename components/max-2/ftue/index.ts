@@ -1,3 +1,3 @@
-export { FtueModal } from "./ftue-modal"
-export { MerchandisingBanner } from "./merchandising-banner"
-export { FtueProvider, useFtue } from "./ftue-provider"
+export { SmartMatchExplainerSheet } from "./smart-match-explainer-sheet"
+export { BeforeAfterToggle } from "./before-after-toggle"
+export type { BeforeAfterView } from "./before-after-toggle"

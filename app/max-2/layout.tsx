@@ -6,7 +6,7 @@ import { AppShell } from "@/components/app-shell"
 import { HoldingCostRateProvider } from "@/components/max-2/holding-cost-rate-context"
 import { Max2UiProvider } from "@/components/max-2/max-2-ui-context"
 import { Max2SpyneScope } from "@/components/max-2/max2-spyne-scope"
-import { FtueProvider } from "@/components/max-2/ftue"
+import { PlanProvider } from "@/components/plan/plan-context"
 import {
   Max2SidebarRail,
   Max2SidebarRailChildLink,
@@ -53,6 +53,9 @@ const navItems: NavItem[] = [
     ],
   },
   { href: "/max-2/marketing", label: "Marketing", icon: "campaign" },
+  { href: "/max-2/marketing-ai", label: "Campaigns AI", icon: "auto_awesome" },
+  // FTUE-only Marketing Tour entry disabled. Restore by uncommenting:
+  // { href: "/max-2/marketing-tour", label: "Marketing Tour", icon: "auto_awesome" },
   {
     href: "/max-2/sales",
     label: "Sales",
@@ -167,6 +170,7 @@ export default function Max2Layout({ children }: { children: React.ReactNode }) 
   }
 
   return (
+    <PlanProvider>
     <AppShell>
       <Max2UiProvider
         sidebarCollapsed={collapsed}
@@ -222,13 +226,12 @@ export default function Max2Layout({ children }: { children: React.ReactNode }) 
                 isConsoleTabRoute ? "pb-max2-page pt-0" : max2Layout.pagePadding
               )}
             >
-              <HoldingCostRateProvider>
-                <FtueProvider>{children}</FtueProvider>
-              </HoldingCostRateProvider>
+              <HoldingCostRateProvider>{children}</HoldingCostRateProvider>
             </div>
           </div>
         </Max2SpyneScope>
       </Max2UiProvider>
     </AppShell>
+    </PlanProvider>
   )
 }

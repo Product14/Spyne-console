@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ProLockButton, useIsPro } from "@/components/plan"
+import { MaterialSymbol } from "@/components/max-2/material-symbol"
 
 export type MerchandisingActionTabKey =
   | "no-photos"
@@ -37,30 +39,84 @@ function PitchBanner({
   ctaLabel,
   ctaHref,
   variant = "default",
+  proLocked = false,
+  proLockLabel,
+  secondaryCta,
 }: {
   body: React.ReactNode
   ctaLabel: string
   ctaHref: string
   /** `instant`: blue / purple / green gradient slab for the instant-media CTA. */
   variant?: "default" | "instant"
+  /** When true on Lite plan, swap the shell for the Pro gradient + Unlock CTA. */
+  proLocked?: boolean
+  proLockLabel?: string
+  /** Optional secondary CTA shown to the right of the primary action. */
+  secondaryCta?: {
+    label: string
+    icon?: string
+    onClick?: () => void
+  }
 }) {
   const shell =
     variant === "instant" ? max2Classes.merchandisingInstantPitchBanner : max2Classes.overviewSuggestBanner
   const iconTone =
     variant === "instant" ? "text-spyne-primary" : "text-spyne-warning-ink"
 
+  // Pro-gradient shell when locked — overrides the default warning/instant background
+  // so any locked banner (Smart Match, 360° spin, etc.) reads as a Pro upgrade pitch.
+  const proLockedStyle: React.CSSProperties | undefined = proLocked
+    ? {
+        background:
+          "linear-gradient(118deg, rgb(124 58 237 / 0.14) 0%, rgb(219 39 119 / 0.14) 50%, rgb(245 158 11 / 0.14) 100%), var(--spyne-surface)",
+        borderColor: "color-mix(in srgb, #7C3AED 22%, transparent)",
+        boxShadow: "0 0 0 1px color-mix(in srgb, #7C3AED 8%, transparent)",
+      }
+    : undefined
+
   return (
-    <div className={shell}>
+    <div className={shell} style={proLockedStyle}>
       <div className={max2Classes.overviewSuggestBannerContent}>
-        <Megaphone className={cn("mt-0.5 h-5 w-5 shrink-0", iconTone)} aria-hidden />
+        <Megaphone
+          className={cn(
+            "mt-0.5 h-5 w-5 shrink-0",
+            proLocked ? "text-[#7C3AED]" : iconTone,
+          )}
+          aria-hidden
+        />
         <div className="min-w-0 flex-1 text-sm text-spyne-text">{body}</div>
       </div>
-      <Link
-        href={ctaHref}
-        className={cn(spyneComponentClasses.btnPrimaryMd, "inline-flex shrink-0 justify-center no-underline")}
-      >
-        {ctaLabel}
-      </Link>
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        {proLocked ? (
+          <ProLockButton
+            label={proLockLabel ?? "Unlock with Pro"}
+            size="md"
+            className="shrink-0"
+          />
+        ) : (
+          <Link
+            href={ctaHref}
+            className={cn(spyneComponentClasses.btnPrimaryMd, "inline-flex shrink-0 justify-center no-underline")}
+          >
+            {ctaLabel}
+          </Link>
+        )}
+        {secondaryCta ? (
+          <button
+            type="button"
+            onClick={secondaryCta.onClick}
+            className={cn(
+              spyneComponentClasses.btnSecondaryMd,
+              "inline-flex shrink-0 justify-center",
+            )}
+          >
+            {secondaryCta.icon ? (
+              <MaterialSymbol name={secondaryCta.icon} size={16} />
+            ) : null}
+            {secondaryCta.label}
+          </button>
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -77,35 +133,28 @@ export function MerchandisingActionPitchBanners({
   vehicles: MerchandisingVehicle[]
   onOpenPerfectVinExample?: () => void
 }) {
+  const isPro = useIsPro()
   const noPhoto = vehicles.filter((v) => v.mediaStatus === "no-photos")
   const instantEligible = noPhoto.filter(merchandisingInstantMediaEligible)
   const nInstant = instantEligible.length
-  const nNoPhoto = noPhoto.length
 
   if (tabKey === "no-photos") {
     const nShoots = Math.max(1, Math.ceil(nInstant * 0.65))
-    const addLabel =
-      nNoPhoto === 1 ? `Add photos on 1 VIN` : `Add photos in all ${nNoPhoto} VINs`
 
     return (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <PitchBanner
-          variant="instant"
-          body={
-            <p>
-              <strong>Complete your shoot in Smart Match</strong> — Completing {nShoots} shoot{nShoots !== 1 ? "s" : ""} in your inventory will add photos to{" "}
-              <strong>{nInstant} new vehicle{nInstant !== 1 ? "s" : ""}</strong>.
-            </p>
-          }
-          ctaLabel="Go to Smart Match"
-          ctaHref="/max-2/studio/smart-match"
-        />
-        <PitchBanner
-          body={<p>{addLabel}</p>}
-          ctaLabel="Add photos"
-          ctaHref="/max-2/studio/inventory?media=no-photos"
-        />
-      </div>
+      <PitchBanner
+        variant="instant"
+        body={
+          <p>
+            <strong>Complete your shoot in Smart Match</strong> — Completing {nShoots} shoot{nShoots !== 1 ? "s" : ""} in your inventory will add photos to{" "}
+            <strong>{nInstant} new vehicle{nInstant !== 1 ? "s" : ""}</strong>.
+          </p>
+        }
+        ctaLabel="Go to Smart Match"
+        ctaHref="/max-2/studio/smart-match"
+        proLocked={!isPro}
+        proLockLabel="Unlock Smart Match"
+      />
     )
   }
 
@@ -165,17 +214,33 @@ export function MerchandisingActionPitchBanners({
       href: "/max-2/studio/inventory?issue=smart-match",
     },
     quality: {
-      body: "Sun glare, blur, or reflections make listings look unprofessional — reprocess or reshoot.",
+      body: "Reshoot with the Spyne app — guided angles, auto-cropping, and on-device glare and blur checks catch quality issues before the photo is saved.",
       href: "/max-2/studio/inventory?issue=quality",
     },
     "non-compliant": {
-      body: "Wrong angles, off-brand backgrounds, or watermarks detected — replacing them protects your score.",
+      body: "Shoot with the Spyne app — every frame passes brand-background, watermark, and angle compliance checks the moment it's captured.",
       href: "/max-2/studio/inventory?issue=non-compliant",
     },
   }
 
   const row = single[tabKey]
-  return <PitchBanner body={<p>{row.body}</p>} ctaLabel="View all vehicles" ctaHref={row.href} />
+  const proLocked = !isPro && (tabKey === "smart-match" || tabKey === "no360")
+  const proLockLabel = tabKey === "no360" ? "Unlock 360°" : "Unlock Smart Match"
+  const showSpyneAppVideo = tabKey === "quality" || tabKey === "non-compliant"
+  return (
+    <PitchBanner
+      body={<p>{row.body}</p>}
+      ctaLabel="View all vehicles"
+      ctaHref={row.href}
+      proLocked={proLocked}
+      proLockLabel={proLockLabel}
+      secondaryCta={
+        showSpyneAppVideo
+          ? { label: "Watch video", icon: "play_circle" }
+          : undefined
+      }
+    />
+  )
 }
 
 const PERFECT_EXAMPLE_VIN = "1FTEW1EP5MFA10001"

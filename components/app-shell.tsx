@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Menu, Zap, ChevronDown, User } from "lucide-react"
 import { MaterialSymbol } from "@/components/max-2/material-symbol"
+import { usePlan, type Plan } from "@/components/plan/plan-context"
 
 const retailIndigo = "#302667"
 const retailMuted = "#9E9E9E"
@@ -57,12 +58,23 @@ interface AppShellProps {
   statsChips?: React.ReactNode
 }
 
+const PLAN_OPTIONS: { value: Plan; label: string; description: string }[] = [
+  { value: "lite", label: "Lite", description: "Core console" },
+  { value: "pro", label: "Pro", description: "Full Spyne suite" },
+]
+
 export function AppShell({ children, statsChips }: AppShellProps) {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [rooftopId, setRooftopId] = React.useState(ROOFTOP_OPTIONS[0]!.id)
   const [rooftopMenuOpen, setRooftopMenuOpen] = React.useState(false)
   const [websiteMenuOpen, setWebsiteMenuOpen] = React.useState(false)
+  const [planMenuOpen, setPlanMenuOpen] = React.useState(false)
+  const { plan, setPlan } = usePlan()
+  const activePlan = React.useMemo(
+    () => PLAN_OPTIONS.find((p) => p.value === plan) ?? PLAN_OPTIONS[0]!,
+    [plan],
+  )
   const isMax2 = pathname.startsWith("/max-2")
 
   const selectedRooftop = React.useMemo(
@@ -168,6 +180,80 @@ export function AppShell({ children, statsChips }: AppShellProps) {
 
             <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
               {statsChips}
+
+              <DropdownMenu open={planMenuOpen} onOpenChange={setPlanMenuOpen}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label={`Active plan — ${activePlan.label}. Open plan switcher.`}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-left transition-colors",
+                      "border-[#302667]/14 bg-[#EDEAF6]/55",
+                      "hover:border-[#302667]/22 hover:bg-[#EDEAF6]/90",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#302667]/20 focus-visible:ring-offset-1",
+                      "data-[state=open]:border-[#302667]/25 data-[state=open]:bg-[#E4DEF2]",
+                    )}
+                  >
+                    <span
+                      className="inline-flex h-5 w-5 shrink-0 items-center justify-center"
+                      style={{ color: retailIndigo }}
+                      aria-hidden
+                    >
+                      <MaterialSymbol
+                        name={plan === "pro" ? "workspace_premium" : "bolt"}
+                        size={20}
+                        className="leading-none"
+                      />
+                    </span>
+                    <span
+                      className="whitespace-nowrap text-xs font-semibold leading-none tracking-tight sm:text-sm"
+                      style={{ color: retailIndigo }}
+                    >
+                      Plan {activePlan.label}
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 shrink-0 text-neutral-500 transition-transform duration-200 sm:size-4",
+                        planMenuOpen && "rotate-180",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={8}
+                  className="w-[min(calc(100vw-2rem),16rem)] rounded-lg border-neutral-200/90 p-1.5 shadow-none"
+                >
+                  <DropdownMenuRadioGroup
+                    value={plan}
+                    onValueChange={(v) => {
+                      if (v === "lite" || v === "pro") setPlan(v)
+                    }}
+                  >
+                    {PLAN_OPTIONS.map((p) => (
+                      <DropdownMenuRadioItem
+                        key={p.value}
+                        value={p.value}
+                        className="cursor-pointer rounded-md py-2 pl-8 pr-2 text-sm focus:bg-[#EDEAF6]/80"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium" style={{ color: retailIndigo }}>
+                            {p.label}
+                          </span>
+                          <span className="text-xs text-neutral-500">{p.description}</span>
+                        </div>
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <div
+                className="hidden h-7 w-px shrink-0 bg-neutral-200 sm:block"
+                aria-hidden
+              />
+
               <DropdownMenu onOpenChange={setWebsiteMenuOpen}>
                 <DropdownMenuTrigger asChild>
                   <button

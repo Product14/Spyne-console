@@ -17,11 +17,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Switch } from "@/components/ui/switch"
 import {
+  SpyneMediaScoreChip,
   SpyneMediaStatusChip,
   SpynePublishStatusChip,
 } from "@/components/max-2/spyne-ui"
+import { BeforeAfterToggle } from "@/components/max-2/ftue/before-after-toggle"
 import { StudioInventoryLineTabs } from "@/components/max-2/studio/studio-inventory-line-tabs"
 import { MerchandisingMediaPipelineCell } from "@/components/max-2/studio/merchandising-media-pipeline-cell"
 import { merchandisingInstantMediaEligible } from "@/components/max-2/studio/merchandising-action-pitch-banners"
@@ -37,6 +38,7 @@ import {
   getEffectiveStudioHoldingCostPerDayClient,
 } from "@/lib/holding-cost-config"
 import { STUDIO_HOLDING_COST_PER_DAY } from "@/lib/inventory-issue-label"
+import { ProBadge, ProLockButton, useIsPro } from "@/components/plan"
 
 type VdpTab =
   | "photos"
@@ -92,6 +94,34 @@ function formatSyncLine(iso?: string): string {
 function galleryUrls(v: MerchandisingVehicle): string[] {
   const count = Math.max(1, Math.min(v.photoCount || 8, 14))
   return Array.from({ length: count }, (_, i) => demoVehicleThumbnailByKey(`${v.vin}-g${i}`))
+}
+
+/**
+ * Per-vehicle media score, 0–100. Demo derivation: media status + photo count
+ * + 360° presence. Real wiring lives behind the listing readiness service.
+ */
+function mediaScoreForVehicle(v: MerchandisingVehicle): number {
+  let base: number
+  switch (v.mediaStatus) {
+    case "no-photos":
+      base = 18
+      break
+    case "stock-photos":
+      base = 38
+      break
+    case "clone-photos":
+      base = 52
+      break
+    case "real-photos":
+      base = 78
+      break
+    default:
+      base = 70
+  }
+  // Photo count bumps quality up to +8; 360° spin adds +4.
+  const photoBump = Math.min(8, Math.round((v.photoCount || 0) / 2))
+  const spinBump = v.has360 ? 4 : 0
+  return Math.max(0, Math.min(100, base + photoBump + spinBump))
 }
 
 function TabStatusIcon({ stage }: { stage: "ok" | "warn" | "bad" }) {
@@ -241,11 +271,14 @@ function VehicleVdpToolbarActions({ vin, compact }: { vin: string; compact?: boo
 
 export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehicle }) {
   const router = useRouter()
+  const isPro = useIsPro()
   const pageRootRef = React.useRef<HTMLDivElement>(null)
   const [headerCompact, setHeaderCompact] = React.useState(false)
   const [tab, setTab] = React.useState<VdpTab>("photos")
-  const [viewInput, setViewInput] = React.useState(false)
+  // Before/After view: default to "Before" (raw input).
+  const [viewInput, setViewInput] = React.useState(true)
   const [heroIndex, setHeroIndex] = React.useState(0)
+  const vehicleMediaScore = React.useMemo(() => mediaScoreForVehicle(v), [v])
   const [holdingPerDay, setHoldingPerDay] = React.useState(STUDIO_HOLDING_COST_PER_DAY)
 
   const pipeline = React.useMemo(() => resolveStudioMediaPipeline(v), [v])
@@ -468,9 +501,27 @@ export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehic
             </span>
           </SpyneSegmentedButton>
           <SpyneSegmentedButton active={tab === "spin360"} onClick={() => setTab("spin360")}>
-            <span className="inline-flex items-center gap-2 whitespace-nowrap">
-              <MaterialSymbol name="360" size={20} className="opacity-95" />
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 whitespace-nowrap",
+                !isPro && "bg-clip-text text-transparent",
+              )}
+              style={
+                !isPro
+                  ? {
+                      backgroundImage:
+                        "linear-gradient(118deg, #7C3AED 0%, #DB2777 50%, #F59E0B 100%)",
+                    }
+                  : undefined
+              }
+            >
+              <MaterialSymbol
+                name="360"
+                size={20}
+                className={cn("opacity-95", !isPro && "text-[#7C3AED]")}
+              />
               360° spin
+              {!isPro ? <ProBadge /> : null}
               <TabStatusIcon stage={pipelineTabIconForSpin(pipeline)} />
             </span>
           </SpyneSegmentedButton>
@@ -540,11 +591,14 @@ export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehic
 
           <section className={cn(max2Classes.overviewPanelShell, "lg:col-span-8")}>
             <div className={cn(max2Classes.overviewPanelHeader, "flex flex-row flex-wrap items-start justify-between gap-3")}>
-              <h2 className={spyneComponentClasses.cardTitle}>Photos</h2>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">View Input</span>
-                <Switch checked={viewInput} onCheckedChange={setViewInput} aria-label="Toggle View Input" />
+              <div className="flex items-center gap-3">
+                <h2 className={spyneComponentClasses.cardTitle}>Photos</h2>
+                <SpyneMediaScoreChip score={vehicleMediaScore} size="md" />
               </div>
+              <BeforeAfterToggle
+                value={viewInput ? "before" : "after"}
+                onChange={(next) => setViewInput(next === "before")}
+              />
             </div>
             <div className="px-5 pb-5">
               {isMerchandisingNoPhotosVehicle(v) ? (
@@ -559,12 +613,24 @@ export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehic
                 <>
                   <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-spyne-border bg-white">
                     {/* eslint-disable-next-line @next/next/no-img-element -- demo gallery uses static public assets */}
-                    <img src={heroSrc} alt="" className="h-full w-full object-contain object-center" />
-                    {viewInput ? (
-                      <div className="pointer-events-none absolute bottom-3 left-3 rounded-md bg-black/55 px-2 py-1 text-[11px] font-medium text-white">
-                        View Input (source files)
-                      </div>
-                    ) : null}
+                    <img
+                      src={heroSrc}
+                      alt=""
+                      className="h-full w-full object-contain object-center transition-[filter] duration-300"
+                      style={{
+                        filter: viewInput
+                          ? "saturate(0.55) contrast(0.92) brightness(0.94)"
+                          : "none",
+                      }}
+                    />
+                    <div
+                      className={cn(
+                        "pointer-events-none absolute bottom-3 left-3 rounded-md px-2 py-1 text-[11px] font-semibold text-white",
+                        viewInput ? "bg-black/55" : "bg-spyne-success/85",
+                      )}
+                    >
+                      {viewInput ? "Before · raw input" : "After · Spyne-processed"}
+                    </div>
                     <button
                       type="button"
                       onClick={onPrevHero}
@@ -697,8 +763,15 @@ export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehic
       {tab === "spin360" && (
         <section className={max2Classes.overviewPanelShell}>
           <div className={max2Classes.overviewPanelHeader}>
-            <h2 className={spyneComponentClasses.cardTitle}>360° spin</h2>
-            <p className={max2Classes.overviewPanelDescription}>Interactive spin for this stock number.</p>
+            <div className="flex items-center gap-2">
+              <h2 className={spyneComponentClasses.cardTitle}>360° spin</h2>
+              {!isPro ? <ProBadge /> : null}
+            </div>
+            <p className={max2Classes.overviewPanelDescription}>
+              {isPro
+                ? "Interactive spin for this stock number."
+                : "Interactive spin for this stock number — included with the Pro plan."}
+            </p>
           </div>
           <div className="flex flex-col items-center justify-center px-5 pb-8 pt-2">
             {v.has360 ? (
@@ -708,12 +781,20 @@ export function VehicleDisplayPage({ vehicle: v }: { vehicle: MerchandisingVehic
             ) : (
               <p className="text-sm text-muted-foreground">No 360° spin yet. Generate spin from Studio.</p>
             )}
-            <Link
-              href={`/max-2/studio/add?vin=${encodeURIComponent(v.vin)}&focus=360`}
-              className={cn(spyneComponentClasses.btnPrimaryMd, "mt-6 no-underline")}
-            >
-              {v.has360 ? "Replace 360°" : "Generate 360°"}
-            </Link>
+            {isPro ? (
+              <Link
+                href={`/max-2/studio/add?vin=${encodeURIComponent(v.vin)}&focus=360`}
+                className={cn(spyneComponentClasses.btnPrimaryMd, "mt-6 no-underline")}
+              >
+                {v.has360 ? "Replace 360°" : "Generate 360°"}
+              </Link>
+            ) : (
+              <ProLockButton
+                label={v.has360 ? "Unlock 360° editing" : "Unlock 360° generation"}
+                size="md"
+                className="mt-6"
+              />
+            )}
           </div>
         </section>
       )}

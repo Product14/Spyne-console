@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
 import {
   SmartCampaignsHub,
   // SmartCampaignsIntroModal, // FTUE intro disabled per product request.
@@ -11,23 +10,13 @@ import { MaterialSymbol } from "@/components/max-2/material-symbol"
 import { max2Classes, max2Layout, spyneComponentClasses } from "@/lib/design-system/max-2"
 import { cn } from "@/lib/utils"
 
-function MarketingContent() {
+/**
+ * FTUE / demo clone of the Marketing route. Identical Smart Campaigns
+ * experience, but the intro modal fires every visit (forceOpen) so the
+ * onboarding story can be replayed on demand.
+ */
+export default function MarketingTourPage() {
   const hubRef = React.useRef<SmartCampaignsHubHandle>(null)
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const createCampaign = searchParams.get("createCampaign")
-
-  /**
-   * Deep link from the Merchandising smart-campaign hook toast. When the
-   * route lands with `?createCampaign=<filterKey>`, open the wizard at the
-   * Review step with the matching suggestion pre-filled, then clean the
-   * URL so a refresh doesn't reopen the wizard.
-   */
-  React.useEffect(() => {
-    if (!createCampaign) return
-    hubRef.current?.startFromTrigger(createCampaign)
-    router.replace("/max-2/marketing", { scroll: false })
-  }, [createCampaign, router])
 
   return (
     <div className={cn(max2Layout.pageStack)}>
@@ -51,16 +40,8 @@ function MarketingContent() {
       <SmartCampaignsHub ref={hubRef} />
       {/* Smart Campaigns FTUE intro disabled. Restore by uncommenting the
           import above and the line below.
-      <SmartCampaignsIntroModal />
+      <SmartCampaignsIntroModal forceOpen />
       */}
     </div>
-  )
-}
-
-export default function MarketingPage() {
-  return (
-    <React.Suspense fallback={null}>
-      <MarketingContent />
-    </React.Suspense>
   )
 }

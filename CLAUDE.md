@@ -116,6 +116,10 @@ Always use `MaterialSymbol` from `components/max-2/material-symbol.tsx`. Only fa
 
 ## General
 
-- All CTAs use `spyne-primary` color only — no yellow, red, or orange action buttons.
+- All CTAs use `spyne-primary` color only. No yellow, red, or orange action buttons.
 - Keep components small and focused. Extend via props, not duplication.
-- The Max 2 shell is wrapped in `Max2SpyneScope` (`app/max-2/layout.tsx`) — all design-system CSS classes only work inside this scope.
+- The Max 2 shell is wrapped in `Max2SpyneScope` (`app/max-2/layout.tsx`); all design-system CSS classes only work inside this scope.
+
+## Copy
+
+- **Never use em dashes (`—`) in user-visible UI text.** Use a period, comma, colon, or sentence break instead. This applies to all rendered strings (titles, descriptions, helper text, button labels, chip copy, tooltips, etc.). Code comments and source-code identifiers are fine.
